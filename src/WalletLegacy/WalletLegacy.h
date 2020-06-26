@@ -96,7 +96,7 @@ public:
   virtual std::error_code cancelTransaction(size_t transactionId) override;
 
   virtual void getAccountKeys(AccountKeys& keys) override;
- 
+  bool getSeed(std::string& electrum_words);
   
 private:
 

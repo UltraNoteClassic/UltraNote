@@ -145,6 +145,7 @@ public:
   virtual std::error_code cancelTransaction(size_t transferId) = 0;
 
   virtual void getAccountKeys(AccountKeys& keys) = 0;
+  virtual bool getSeed(std::string& electrum_words) = 0;
 };
 
 }

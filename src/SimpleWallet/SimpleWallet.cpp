@@ -560,6 +560,22 @@ std::string simple_wallet::get_commands_str() {
   return ss.str();
 }
 
+bool simple_wallet::seed(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
+  std::string electrum_words;
+  bool success = m_wallet->getSeed(electrum_words);
+
+  if (success)
+   {
+    std::cout << "\nPLEASE NOTE: the following 25 words can be used to recover access to your wallet. Please write them down and store them somewhere safe and secure. Please do not store them in your email or on file storage services outside of your immediate control.\n";
+    std::cout << electrum_words << std::endl;
+   }
+   else
+   {
+    fail_msg_writer() << "The wallet is non-deterministic and doesn't have mnemonic seed.";
+   }
+   return true;
+}
+
 bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
   success_msg_writer() << get_commands_str();
   return true;

@@ -224,6 +224,19 @@ void WalletLegacy::initWithKeys(const AccountKeys& accountKeys, const std::strin
   m_observerManager.notify(&IWalletLegacyObserver::initCompleted, std::error_code());
 }
 
+bool WalletLegacy::getSeed(std::string& electrum_words)
+{
+	std::string lang = "English";
+	crypto::ElectrumWords::bytes_to_words(m_account.getAccountKeys().spendSecretKey, electrum_words, lang);
+
+	Crypto::SecretKey second;
+	keccak((uint8_t *)&m_account.getAccountKeys().spendSecretKey, sizeof(Crypto::SecretKey), (uint8_t *)&second, sizeof(Crypto::SecretKey));
+
+	sc_reduce32((uint8_t *)&second);
+
+	return memcmp(second.data, m_account.getAccountKeys().viewSecretKey.data, sizeof(Crypto::SecretKey)) == 0;
+}
+
 void WalletLegacy::initAndLoad(std::istream& source, const std::string& password) {
   std::unique_lock<std::mutex> stateLock(m_cacheMutex);
 
@@ -233,7 +246,7 @@ void WalletLegacy::initAndLoad(std::istream& source, const std::string& password
 
   m_password = password;
   m_state = LOADING;
- 
+      
   m_asyncContextCounter.addAsyncContext();
   std::thread loader(&WalletLegacy::doLoad, this, std::ref(source));
   loader.detach();
